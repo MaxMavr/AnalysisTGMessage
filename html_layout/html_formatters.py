@@ -25,4 +25,4 @@ def formatter_digit(digit: Union[int, float]):
 
 
 def formatter_percent(percent: Union[int, float]):
-    return f'<i>{percent * 100:,.2f}%</i>'.replace(".", ",")
+    return f'<i>{percent:,.2f}%</i>'.replace(".", ",")

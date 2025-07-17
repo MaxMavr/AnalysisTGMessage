@@ -47,7 +47,7 @@ class StatPercent:
 
     @property
     def html(self):
-        return make_stat_unit('stat-digit', self.value / self.total, formatter_percent)
+        return make_stat_unit('stat-digit', self.value / self.total * 100, formatter_percent)
 
 
 @dataclass
@@ -65,7 +65,7 @@ class StatTimestamp:
 
     @property
     def html(self):
-        return make_stat_unit('stat-digit', self.value, formatter_timestamp)
+        return make_stat_unit('stat-text', self.value, formatter_timestamp)
 
 
 @dataclass

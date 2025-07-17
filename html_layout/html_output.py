@@ -1,5 +1,5 @@
 from user import User
-from typing import List
+from typing import List, Union
 from html_layout.html_config import *
 from html_layout.html_item import (StatText,
                                    StatDigit,
@@ -14,6 +14,22 @@ from html_layout.html_item import (StatText,
                                    StatRow,
                                    WordMap,
                                    StatBlock)
+
+
+def calculate_average(values: list):
+    n = len(values)
+    return sum(values) / n
+
+
+def calculate_median(values: List[Union[int, float]]):
+    n = len(values)
+
+    if n % 2 == 1:
+        median = values[n // 2]
+    else:
+        median = (values[n // 2 - 1] + values[n // 2]) / 2
+
+    return median
 
 
 def make_html(users: List[User], chat: User, output_name: str = 'report'):
@@ -33,17 +49,23 @@ def make_html(users: List[User], chat: User, output_name: str = 'report'):
                                     for day, count in chat.days_count_messages.items()
                                     if count == chat_max_day_count_messages]
 
-    html += StatBlock('Даты',
+    html += StatBlock('Дни',
                       [
-                          StatRow('Первое',
+                          StatRow('Первое сообщение',
                                   [StatTimestamp(chat.first_messages_timestamp)]
                                   ),
-                          StatRow('Последнее',
+                          StatRow('Последнее сообщение',
                                   [StatTimestamp(chat.last_messages_timestamp)]
                                   ),
-                          StatRow('Максимальный',
+                          StatRow('Максимальное за день',
                                   [*chat_max_days_count_messages,
                                    StatText(chat_max_day_count_messages, lambda i: f'{i} сообщ.')]
+                                  ),
+                          StatRow('Среднее за день',
+                                  [StatText(int(calculate_average(list(chat.days_count_messages.values()))), lambda i: f'~{i} сообщ.')]
+                                  ),
+                          StatRow('Медианное за день',
+                                  [StatText(calculate_median(list(chat.days_count_messages.values())), lambda i: f'{i} сообщ.')]
                                   )
                       ]
                       ).html
@@ -294,6 +316,8 @@ def make_html(users: List[User], chat: User, output_name: str = 'report'):
                           ]
                           ).html
 
+        html += '<div class="two-sides">'
+
         html += StatBlock('Слова',
                           [
                               StatRow('Количество',
@@ -303,11 +327,7 @@ def make_html(users: List[User], chat: User, output_name: str = 'report'):
                               StatRow('Уникальных',
                                       [StatDigit(count_unique_words),
                                        StatPercent(count_unique_words, chat_count_unique_words)]
-                                      ),
-                              WordMap('Карта <i>по количеству</i>',
-                                      sorted(user.words_map.items(), key=lambda item: item[1], reverse=True)),
-                              WordMap('Карта <i>по алфавиту</i>',
-                                      sorted(user.words_map.items(), key=lambda item: item[0].lower()))
+                                      )
                           ]
                           ).html
 
@@ -320,12 +340,23 @@ def make_html(users: List[User], chat: User, output_name: str = 'report'):
                               StatRow('Уникальных',
                                       [StatDigit(count_unique_chars),
                                        StatPercent(count_unique_chars, chat_count_unique_chars)]
-                                      ),
-                              WordMap('Карта <i>букв</i>',
-                                      sorted(user.chars_map.items(), key=lambda item: item[1], reverse=True)),
-                              WordMap('Карта <i>символов</i>',
-                                      sorted(user.punctuation_map.items(), key=lambda item: item[1], reverse=True))]
+                                      )
+                          ]
                           ).html
+
+        html += '</div>'
+
+        html += WordMap('Карта <i>по количеству</i>',
+                sorted(user.words_map.items(), key=lambda item: item[1], reverse=True)).html
+
+        html += WordMap('Карта <i>по алфавиту</i>',
+                sorted(user.words_map.items(), key=lambda item: item[0].lower())).html
+
+        html += WordMap('Карта <i>букв</i>',
+                        sorted(user.chars_map.items(), key=lambda item: item[1], reverse=True)).html
+
+        html += WordMap('Карта <i>символов</i>',
+                        sorted(user.punctuation_map.items(), key=lambda item: item[1], reverse=True)).html
 
         html += '</section>'
 
