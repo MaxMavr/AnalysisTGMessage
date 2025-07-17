@@ -1,41 +1,42 @@
 from typing import List, Dict
 import re
+from dataclasses import dataclass, field
 
 
+@dataclass()
 class User:
-    def __init__(self, name: str, uid: str):
-        self.name = name
-        self.uid = uid
+    name: str
+    uid: str
 
-        self.longest_messages: List[str] = []
-        self.len_longest_message = 0
+    longest_messages: List[str] = field(default_factory=list)
+    len_longest_message: int = 0
 
-        self.count_messages = 0
-        self.count_sensible_messages = 0
-        self.count_forwarded_messages = 0
-        self.count_pin_messages = 0
+    count_messages: int = 0
+    count_sensible_messages: int = 0
+    count_forwarded_messages: int = 0
+    count_pin_messages: int = 0
 
-        self.count_stickers = 0
+    count_stickers: int = 0
 
-        self.count_voices = 0
-        self.duration_voices = 0
+    count_voices: int = 0
+    duration_voices: int = 0
 
-        self.count_videos = 0
-        self.duration_videos = 0
+    count_videos: int = 0
+    duration_videos: int = 0
 
-        self.count_phone_call = 0
-        self.duration_phone_call = 0
+    count_phone_call: int = 0
+    duration_phone_call: int = 0
 
-        self.count_words = 0
-        self.count_chars = 0
+    count_words: int = 0
+    count_chars: int = 0
 
-        self.first_messages_timestamp = 0  # Unix-время
-        self.last_messages_timestamp = 0   # Unix-время
+    first_messages_timestamp: int = 0  # Unix-время
+    last_messages_timestamp: int = 0   # Unix-время
 
-        self.days_count_messages: Dict[str, int] = {}
-        self.words_map: Dict[str, int] = {}
-        self.chars_map: Dict[str, int] = {}
-        self.punctuation_map: Dict[str, int] = {}
+    days_count_messages: Dict[str, int] = field(default_factory=dict)
+    words_map: Dict[str, int] = field(default_factory=dict)
+    chars_map: Dict[str, int] = field(default_factory=dict)
+    punctuation_map: Dict[str, int] = field(default_factory=dict)
 
     @staticmethod
     def remove_non_alpha(text):
