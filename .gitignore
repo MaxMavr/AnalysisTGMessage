@@ -1,0 +1,5 @@
+/TEST/
+/result/*.html
+/__pycache__/
+/.idea/
+/venv/
