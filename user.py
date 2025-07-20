@@ -9,6 +9,7 @@ class User:
     uid: str
 
     longest_messages: List[str] = field(default_factory=list)
+    longest_messages_days: List[str] = field(default_factory=list)
     len_longest_message: int = 0
 
     count_messages: int = 0
@@ -36,6 +37,8 @@ class User:
     days_count_messages: Dict[str, int] = field(default_factory=dict)
     words_map: Dict[str, int] = field(default_factory=dict)
     chars_map: Dict[str, int] = field(default_factory=dict)
+    words_messages_map: List[int] = field(default_factory=list)
+    chars_messages_map: List[int] = field(default_factory=list)
     punctuation_map: Dict[str, int] = field(default_factory=dict)
 
     @staticmethod
@@ -103,14 +106,16 @@ class User:
         else:
             self.days_count_messages[day] = 1
 
-    def __upd_longest_message(self, text: str):
+    def __upd_longest_message(self, text: str, day: str):
         len_text = len(text)
 
         if len_text > self.len_longest_message:
             self.longest_messages = [text]
+            self.longest_messages_days = [day]
             self.len_longest_message = len_text
         elif len_text == self.len_longest_message:
             self.longest_messages.append(text)
+            self.longest_messages_days.append(day)
 
     def __upd_words_map(self, text: str):
         words = text.split()
@@ -136,6 +141,12 @@ class User:
                 self.chars_map[char] += 1
             else:
                 self.chars_map[char] = 1
+
+    def __upd_words_messages_map(self, text: str):
+        self.words_messages_map.append(len(text.split()))
+
+    def __upd_chars_messages_map(self, text: str):
+        self.chars_messages_map.append(len(text))
 
     def __upd_punctuation_map(self, text: str):
         text = self.remove_spaces(text)
@@ -184,10 +195,12 @@ class User:
         self.__add_count_char(text)
 
         if 'forwarded_from' not in message:
-            self.__upd_longest_message(text)
+            self.__upd_longest_message(text, day)
         self.__upd_days_count_messages(day)
         self.__upd_messages_timestamps(timestamp)
         self.__upd_words_map(text)
         self.__upd_chars_map(text)
+        self.__upd_words_messages_map(text)
+        self.__upd_chars_messages_map(text)
         self.__upd_punctuation_map(text)
 

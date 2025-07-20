@@ -18,10 +18,11 @@ def make_stat_unit(class_name:  str,
 class StatText:
     value: Union[Union[int, float, str]]
     formatter: Callable[[Union[int, float, str]], str]
+    class_name: str = 'stat-text'
 
     @property
     def html(self):
-        return make_stat_unit('stat-text', self.value, self.formatter)
+        return make_stat_unit(self.class_name, self.value, self.formatter)
 
 
 @dataclass
@@ -90,6 +91,7 @@ class StatBar:
         bar += f'<div class="stat-bar-block">'
         for value, color in zip(self.values, self.colors):
             bar += f'\t<div class="stat-bar" style="width: {value / self.total * 100}%; background: {color};"></div>'
+            # bar += f'\t<div class="stat-bar-title" style="text-shadow: 0 0 1px {color};">{formatter_percent(value / self.total * 100)}</div>'
         bar += f'</div>'
 
         return bar
@@ -117,13 +119,15 @@ class StatPie:
 @dataclass
 class StatLongMessages:
     messages: List[str]
+    days: List[str]
 
     @property
     def html(self):
         long_message = ''
 
-        for message in self.messages:
-            long_message += f'<div class="stat-long-message">{message}</div>'
+        for message, day in zip(self.messages, self.days):
+            long_message += f'<div class="stat-long-message">{message}</div>\n'
+            long_message += f'<div class="stat-row"><div class="stat-long-message-date">{formatter_date(day)}</div></div>\n'
 
         return long_message
 
@@ -164,7 +168,7 @@ class WordMap:
     def html(self):
         word_map = ''
         word_map += f'<div class="toggle-block collapsed"><div class="toggle-header stat-row">' \
-                    f'<div class="stat-title">{self.title}</div><div class="toggle-icon">›' \
+                    f'<h3 class="stat-title">{self.title}</h3><div class="toggle-icon">›' \
                     f'</div></div><div class="word-map">'
         for word, count in self.wordmap:
             word_map += self.__make_word_card(word, count)
